@@ -1,0 +1,1 @@
+This sample shows a menu item when one of the selected/drag-and-dropped files has a name containing "foo", or when the directory background is right-clicked. It shows the full path of all the selected files or the background directory.
