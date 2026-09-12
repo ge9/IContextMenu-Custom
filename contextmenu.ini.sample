@@ -1,0 +1,79 @@
+; ============================================================================
+; contextmenu.ini must be placed at the same directory as the dll (ContextMenuExt.dll).
+; the enconding must be UTF-8 (BOM is allowed)
+
+; ============================================================================
+; Global configurations should be put before first item.
+;
+; If nopersistent is set true, this ini is checked and read (if updated) every time the context menu is generated.
+; Useful for debugging but a bit slower.
+; If false (default), the configuration remains unchanged until explorer.exe is restarted.
+; nopersistent=false
+;
+; Placeholders are configured as follows:
+; placeholder_files={files}
+; placeholder_file={file}
+nopersistent=true
+
+; ============================================================================
+; After the global configurations, menu items will follow.
+;
+; ---- keys for each item -----------------------------------------------------
+;   class             A comma-separated list of classes described below
+;   title             Menu text. "&" can be used to specify a key (e.g. "e&Xecute")
+;   command           A command line. Available placeholders are described below.
+;                     If the first character is "|", list of files are passed, each suffixed by "\n".
+;   icon              Specify "filepath,index" of an icon.
+;                     environment variables (like %SystemRoot%) will be expanded.
+;   extended          If set (1), shown only when Shift is pressed. Won't work for DragDrop.
+;   position          Specified as "pos1:pos2", where pos1 is the position of the group (determined by separator) and pos2 is the position in the group.
+;                     The precise position depends on other context menus. By default, explorer will determine the position.
+;   separator_before  If set (1), insert a separator before the menu
+;   separator_after   If set (1), insert a separator after the menu
+;   verb              Internal menu name (named as "item0", "item1", ... by default). We usually don't need this.
+;
+; ---- applicable classes -----------------------------------------------------
+;   *                      The clicked file is not a directory
+;   AllFileSystemObjects   Anything is selected
+;   Directory              The clicked file is a directory
+;   .xxx                   The clicked file is *.xxx
+;   Background             Background of directories except desktop
+;   DesktopBackground      Background of desktop
+;   DragDrop               Drag and Drop anything with right button
+;
+; - When multiple files are selected, only the clicked one (which will be the first one in {files}) is checked
+;
+;
+; ---- placeholders -----------------------------------------------------
+; The placeholder string can be changed in the global configurations.
+; All paths are quoted.
+;   {file}  ... The first one of the file (or directory) selected. If nothing is selected (background click), same as {dir}.
+;   {files} ... Space-separated list of all the files (or directories) selected
+;   {dir}   ... The background directory (for DragDrop, Background and DesktopBackground).
+
+[item]
+class=DragDrop
+title=[Custom]&Drag drop
+command=cmd /k echo dragdrop {files} to {dir}
+position=0:0
+
+[item]
+class=*
+title=[Custom]only for shift+click
+command=|mpv.exe --playlist=-
+extended=1
+position=0:0
+
+[item]
+class=.txt .exe
+title=[Custom]showd file name
+command=cmd /k echo {files}
+icon=%SystemRoot%\System32\imageres.dll,97
+separator_before=1
+position=0:0
+
+[item]
+class=DesktopBackground Background
+title=[Custom]show dir name
+command=cmd /k echo dir:{dir} (also available as file:{file})
+position=-0:-0
